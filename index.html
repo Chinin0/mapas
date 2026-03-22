@@ -1,408 +1,466 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Buscador de Recintos</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buscador de Recintos</title>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 
-<style>
-body{margin:0;font-family:Arial;background:#f1f3f6;}
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: #f1f3f6;
+    }
 
-/* NAVBAR */
-.navbar{
-background:#007bff;
-color:white;
-padding:12px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
+    /* NAVBAR */
+    .navbar {
+      background: #007bff;
+      color: white;
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-.navbar h1{font-size:18px;margin:0;}
+    .navbar h1 {
+      font-size: 18px;
+      margin: 0;
+    }
 
-.navbar button{
-background:white;
-color:#007bff;
-border:none;
-padding:8px 12px;
-border-radius:6px;
-cursor:pointer;
-}
+    .navbar button {
+      background: white;
+      color: #007bff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
 
-/* CONTENIDO */
-.contenedor{max-width:900px;margin:auto;padding:15px;}
-.card{background:white;border-radius:12px;padding:15px;box-shadow:0 4px 10px rgba(0,0,0,0.1);}
+    /* CONTENIDO */
+    .contenedor {
+      max-width: 900px;
+      margin: auto;
+      padding: 15px;
+    }
 
-h2{text-align:center;margin-bottom:15px;}
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
 
-.buscador{position:relative;}
+    h2 {
+      text-align: center;
+      margin-bottom: 15px;
+    }
 
-input{width:100%;padding:12px;font-size:16px;border-radius:8px;border:1px solid #ccc;}
+    .buscador {
+      position: relative;
+    }
 
-#sugerencias{
-position:absolute;width:100%;background:white;border-radius:8px;margin-top:5px;max-height:200px;overflow-y:auto;box-shadow:0 4px 10px rgba(0,0,0,0.1);z-index:999;
-}
+    input {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
 
-#sugerencias div{padding:10px;cursor:pointer;border-bottom:1px solid #eee;}
-#sugerencias div:hover{background:#f5f5f5;}
+    #sugerencias {
+      position: absolute;
+      width: 100%;
+      background: white;
+      border-radius: 8px;
+      margin-top: 5px;
+      max-height: 200px;
+      overflow-y: auto;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      z-index: 999;
+    }
 
-button.buscar{
-margin-top:10px;width:100%;padding:12px;font-size:16px;border:none;border-radius:8px;background:#007bff;color:white;cursor:pointer;
-}
+    #sugerencias div {
+      padding: 10px;
+      cursor: pointer;
+      border-bottom: 1px solid #eee;
+    }
 
-#map{margin-top:15px;width:100%;height:65vh;border-radius:12px;}
+    #sugerencias div:hover {
+      background: #f5f5f5;
+    }
 
+    button.buscar {
+      margin-top: 10px;
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+    }
 
-
-</style>
+    #map {
+      margin-top: 15px;
+      width: 100%;
+      height: 65vh;
+      border-radius: 12px;
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="navbar">
-<h1>Recintos</h1>
-<button onclick="window.location.href='ayuda.html'">❓ Ayuda</button>
-</div>
+  <div class="navbar">
+    <h1>Recintos</h1>
+    <div>
+      <button onclick="window.location.href='https://seg.sereci-santacruz.com/#/'">Asistencia</button>
+      <button onclick="window.location.href='ayuda.html'">❓ Ayuda</button>
+    </div>
+  </div>
 
-<div class="contenedor">
-<div class="card">
-<h2>Buscar tu recinto</h2>
+  <div class="contenedor">
+    <div class="card">
+      <h2>Buscar tu recinto</h2>
 
-<div class="buscador">
-<input type="text" id="buscar" placeholder="Nombre o carnet">
-<div id="sugerencias"></div>
-</div>
+      <div class="buscador">
+        <input type="text" id="buscar" placeholder="Nombre o carnet">
+        <div id="sugerencias"></div>
+      </div>
 
-<button class="buscar" onclick="buscar()">Buscar</button>
-</div>
+      <button class="buscar" onclick="buscar()">Buscar</button>
+    </div>
 
-<div id="map"></div>
-</div>
-
-
-
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
-<script>
-
-var map = L.map('map').setView([-17.75,-63.11], 13);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
-var marcador;
-
-// RECINTOS
-var recintos = {
-"U.E. 23 de Diciembre J. Carlos Truji": {lat:-17.76983, lng:-63.11529},
-"Col. Educativo Cotoca": {lat:-17.74604, lng:-63.11758},
-"U.E. El Dorado Norte": {lat:-17.73737, lng:-63.09708},
-"U.E. Nuevo Horizonte": {lat:-17.73058, lng:-63.10971},
-"U.E. Alfredo Barbery Chavez A": {lat:-17.753441, lng:-63.117965},
-"U.E. 26 De Septiembre": {lat:-17.72374, lng:-63.10361},
-"Motacusal": {lat:-17.692081, lng:-63.101891},
-"Fred Nuñez Gonzales": {lat:-17.717763, lng:-63.069608},
-"U.E. Cielito Lindo": {lat:-17.77039, lng:-63.10667},
-"Modulo Rancho Nuevo": {lat:-17.74573, lng:-63.12128},
-"16 de Febrero": {lat:-17.74796, lng:-63.098754},
-"U.E. Señor de los Milagros": {lat:-17.739367, lng:-63.111029},
-"U.E. 24 de Marzo": {lat:-17.729421, lng:-63.101308},
-"U. E. Módulo El Trapiche": {lat:-17.754408, lng:-63.072771},
-"U. E. Módulo Urbanización Cotoca (Prof. Jaime Escalante)": {lat:-17.757409, lng:-63.10226},
-"U.E. Santa Ana (Módulo Educativo)": {lat:-17.759478, lng:-63.127031},
-
-
-//yusara
-"U.E. Arroyito":                                               {lat:-17.832749, lng:-63.074306},
-  "Col. Normandia Josefina Balsamo":                             {lat:-17.856937, lng:-63.08878},
-  "Col. Esc. Inocencio Roman":                                   {lat:-17.85023,  lng:-63.06305},
-  "Col. Castilla La Mancha":                                     {lat:-17.847368, lng:-63.090372},
-  "Col. Escuela El Fuerte":                                      {lat:-17.84582,  lng:-63.14807},
-  "Colegio Ignacio Warnes":                                      {lat:-17.86588,  lng:-63.15627},
-  "Col. Modulo Nro.5 Elva Antelo Jordan":                        {lat:-17.860051, lng:-63.167451},
-  "Col. Escuela Poly Villarroel":                                {lat:-17.8723,   lng:-63.1315},
-  "Col. Escuela Bolivia Holanda":                                {lat:-17.86903,  lng:-63.14489},
-  "Col. San Francisco Sur":                                      {lat:-17.85275,  lng:-63.16087},
-  "Col. Esc. Amsterdan":                                         {lat:-17.85901,  lng:-63.14972},
-  "Col. Luis Espinal Campos":                                    {lat:-17.86751,  lng:-63.16032},
-  "Colegio Fuente Del Saber":                                    {lat:-17.904652, lng:-63.067523},
-  "U.E. San Juan del Este":                                      {lat:-17.857377, lng:-63.05619},
-  "U.E. 19 de Marzo":                                            {lat:-17.86819,  lng:-63.08685},
-  "U.E. Villa Moderna":                                          {lat:-17.844608, lng:-63.068661},
-  "U.E. San Diego de Samaria":                                   {lat:-17.846505, lng:-63.076237},
-  "Colegio San Francisco de Asis":                               {lat:-17.856931, lng:-63.144289},
-  "U.E. Manantial De Vida":                                      {lat:-17.852235, lng:-63.072591},
-  "U.E. Paraíso de los Infantes":                                {lat:-17.849895, lng:-63.067399},
-  "U.E. San Francisco Sur (Modulo Secundario)":                  {lat:-17.858701, lng:-63.158146},
-  "U.E. Amsterdam I Primaria":                                   {lat:-17.862042, lng:-63.151334},
-  "Módulo Educativo El Triunfo":                                 {lat:-17.866336, lng:-63.150573},
-  "U.E. La Ponderosa":                                           {lat:-17.872907, lng:-63.161924},
-  "U.E. Hector Saucedo Montaño":                                 {lat:-17.861428, lng:-63.091736},
-  "U.E. Hortencia Banegas de Pinto":                             {lat:-17.89105,  lng:-63.170399},
-  "U.E. Normandia Thevenet":                                     {lat:-17.854785, lng:-63.0906}
-};
-
-// TODOS LOS OPERADORES
-var datos = [
-
-{operador:"Favio Andres Ramos Avalos", carnet:"9856765", recinto:"U.E. 23 de Diciembre J. Carlos Truji"},
-{operador:"Gabriel Cuellar Suarez", carnet:"6252604", recinto:"U.E. 23 de Diciembre J. Carlos Truji"},
-{operador:"Karina Mansilla Mendoza", carnet:"3882903-1G", recinto:"U.E. 23 de Diciembre J. Carlos Truji"},
-
-{operador:"Laura Coimbra Antelo", carnet:"13542161", recinto:"Col. Educativo Cotoca"},
-{operador:"Camila Céspedes Romero", carnet:"13776074", recinto:"Col. Educativo Cotoca"},
-{operador:"Eva Jimena Llanos Vedia", carnet:"9708177", recinto:"Col. Educativo Cotoca"},
-{operador:"Neidy Brigith Marquez Bellido", carnet:"9783750", recinto:"Col. Educativo Cotoca"},
-
-{operador:"CARLA PATRICIA HINOJOSA FLORES", carnet:"12922001", recinto:"U.E. El Dorado Norte"},
-{operador:"Giselle Mejias Alvarez", carnet:"11342433", recinto:"U.E. El Dorado Norte"},
-{operador:"Rosario Ruiz Ruiz", carnet:"13635046", recinto:"U.E. El Dorado Norte"},
-{operador:"ERIKA VILLARROEL ORTIZ", carnet:"9769483", recinto:"U.E. El Dorado Norte"},
-{operador:"Gardenia Cuevas Ribera", carnet:"13047475", recinto:"U.E. El Dorado Norte"},
-{operador:"Eliana Ayala Gonzales", carnet:"9033359", recinto:"U.E. El Dorado Norte"},
-{operador:"Luis Carlos Segales Justiniano", carnet:"7692032", recinto:"U.E. El Dorado Norte"},
-{operador:"Claribel Daysi Avendaño Rojas", carnet:"6786869", recinto:"U.E. El Dorado Norte"},
-
-{operador:"Yaneth Surubi Posiva", carnet:"7669404", recinto:"U.E. Nuevo Horizonte"},
-{operador:"Angie Nahomi Melgar Mozombite", carnet:"14930144", recinto:"U.E. Nuevo Horizonte"},
-{operador:"Robert Salvador Rodríguez Jiménez", carnet:"8864166", recinto:"U.E. Nuevo Horizonte"},
-{operador:"CARLOS YOEL GUILLEN VACA", carnet:"9836491", recinto:"U.E. Nuevo Horizonte"},
-
-{operador:"Amalec Elvia Vasquez Morales", carnet:"7929002", recinto:"U.E. Alfredo Barbery Chavez A"},
-{operador:"CARLA JOHANY NOGALES MONTERO", carnet:"8137234", recinto:"U.E. Alfredo Barbery Chavez A"},
-{operador:"Karen Daniela Barrios Velasco", carnet:"6243461", recinto:"U.E. Alfredo Barbery Chavez A"},
-{operador:"Katherin Paola Saucedo Vargas", carnet:"11317748", recinto:"U.E. Alfredo Barbery Chavez A"},
-{operador:"Ariana Nogales Diaz", carnet:"9609829", recinto:"U.E. Alfredo Barbery Chavez A"},
-{operador:"Luz Maria Bedregal Borda", carnet:"10692797", recinto:"U.E. Alfredo Barbery Chavez A"},
-
-{operador:"Carla yanel Calvimonte Peralta", carnet:"8869984", recinto:"U.E. 26 De Septiembre"},
-{operador:"Ronald Weimar Chavarría Domínguez", carnet:"10668647", recinto:"U.E. 26 De Septiembre"},
-{operador:"Sabina Veliz Inocente", carnet:"13637483", recinto:"U.E. 26 De Septiembre"},
-{operador:"Daniela Michani Flores", carnet:"9652241", recinto:"U.E. 26 De Septiembre"},
-{operador:"Aracely Pinto Rojas", carnet:"9856400", recinto:"U.E. 26 De Septiembre"},
-{operador:"Erick Joel Vallejos Garcia", carnet:"8268814", recinto:"U.E. 26 De Septiembre"},
-{operador:"América Gamarra Rivero", carnet:"8908948", recinto:"U.E. 26 De Septiembre"},
-
-{operador:"ISRAEL WALTER ROJAS MURILLO", carnet:"8061237", recinto:"Motacusal"},
-
-{operador:"Teodora Poma Vedia", carnet:"5066099", recinto:"Fred Nuñez Gonzales"},
-{operador:"Maira Fernanda Balderrama Castedo", carnet:"8955024-1F", recinto:"Fred Nuñez Gonzales"},
-{operador:"Pamela Cordova Ramos", carnet:"9679808", recinto:"Fred Nuñez Gonzales"},
-{operador:"Michel Alison Calanchi Zuñagua", carnet:"12666767", recinto:"Fred Nuñez Gonzales"},
-
-{operador:"Erika Mico Vilca", carnet:"6214258", recinto:"U.E. Cielito Lindo"},
-{operador:"Fabiola Aldana Garcia", carnet:"14086451", recinto:"U.E. Cielito Lindo"},
-
-{operador:"DANIELA CHUVIRÚ PESOA", carnet:"9614984", recinto:"Modulo Rancho Nuevo"},
-{operador:"Bridny Ibañez Arias", carnet:"12450775", recinto:"Modulo Rancho Nuevo"},
-{operador:"PAULA ELOA LEYTON NOGALES", carnet:"13613550", recinto:"Modulo Rancho Nuevo"},
-{operador:"Ingrid Leila Cadima Espinoza", carnet:"6299402", recinto:"Modulo Rancho Nuevo"},
-{operador:"Robert Waldome Vidal Condori", carnet:"11348164", recinto:"Modulo Rancho Nuevo"},
-
-{operador:"JOSE LUIS TERCEROS VACA", carnet:"8167669", recinto:"16 de Febrero"},
-{operador:"Cesia Caumol Hinojosa", carnet:"14777392", recinto:"16 de Febrero"},
-{operador:"Jimmy Rodriguez Arroyo", carnet:"13596908", recinto:"16 de Febrero"},
-
-{operador:"ELIANA MARTHA SIANCAS SOLIZ", carnet:"11408291", recinto:"U.E. Señor de los Milagros"},
-{operador:"Jorge Alejandro Sandoval Parada", carnet:"6349907", recinto:"U.E. Señor de los Milagros"},
-{operador:"LOLITA GUZMAN YABETA", carnet:"6225291", recinto:"U.E. Señor de los Milagros"},
-
-{operador:"Lizeth Alejandra Mareca Vallejos", carnet:"11315898", recinto:"U.E. 24 de Marzo"},
-{operador:"Alexander Cristopher Tinta Belmonte", carnet:"13271183", recinto:"U.E. 24 de Marzo"},
-{operador:"Alex Giovanni Chore Taborga", carnet:"8933925", recinto:"U.E. 24 de Marzo"},
-
-{operador:"María Rosario Surubi Posiva", carnet:"8898933", recinto:"U. E. Módulo El Trapiche"},
-{operador:"BEBI VARGAS RIOS", carnet:"7847900", recinto:"U. E. Módulo El Trapiche"},
-
-{operador:"PAOLA ESPINOZA CUELLAR", carnet:"6296377", recinto:"U. E. Módulo Urbanización Cotoca (Prof. Jaime Escalante)"},
-{operador:"Silvestre Montero Busch", carnet:"6310213", recinto:"U. E. Módulo Urbanización Cotoca (Prof. Jaime Escalante)"},
-{operador:"LOURDES CACERES JUCHANI", carnet:"11381790", recinto:"U. E. Módulo Urbanización Cotoca (Prof. Jaime Escalante)"},
-{operador:"CINTHIA PAMELA RODRIGUEZ ROSAS", carnet:"12597322", recinto:"U. E. Módulo Urbanización Cotoca (Prof. Jaime Escalante)"},
-{operador:"Aldo Alexis Pereyra Zelada", carnet:"3879640", recinto:"U. E. Módulo Urbanización Cotoca (Prof. Jaime Escalante)"},
-{operador:"Juan Carlos Suarez Cuellar", carnet:"3277885", recinto:"U. E. Módulo Urbanización Cotoca (Prof. Jaime Escalante)"},
-{operador:"Carla Cecilia Suarez Zeballos", carnet:"7714525", recinto:"U. E. Módulo Urbanización Cotoca (Prof. Jaime Escalante)"},
-
-{operador:"Maria Emilia Avila Ulloa", carnet:"12663503", recinto:"U.E. Santa Ana (Módulo Educativo)"},
-{operador:"Eliana marines Barrios Velasco", carnet:"6243462", recinto:"U.E. Santa Ana (Módulo Educativo)"},
+    <div id="map"></div>
+  </div>
 
 
 
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-//yusara
-{operador:"Natalia Terán Vargas",              carnet:"9634440",    recinto:"U.E. Arroyito"},
-  {operador:"Paul Condori Nina",                 carnet:"11304955",   recinto:"U.E. Arroyito"},
-  {operador:"Jose Luis Fuentes Vargas",          carnet:"8172999",    recinto:"U.E. Arroyito"},
- 
-  {operador:"Liliana Nicole Mendoza Morales",    carnet:"12893240",   recinto:"Col. Normandia Josefina Balsamo"},
-  {operador:"Ana Gabriela Torrico Lima Lobo",    carnet:"9832635",    recinto:"Col. Normandia Josefina Balsamo"},
-  {operador:"Karolaen Ninet Cabrera Ayala",      carnet:"9801588",    recinto:"Col. Normandia Josefina Balsamo"},
- 
-  {operador:"Beatriz Chambi Peñaranda",          carnet:"12949054",   recinto:"Col. Esc. Inocencio Roman"},
- 
-  {operador:"Rita Perez Aponte",                 carnet:"4720432",    recinto:"Col. Castilla La Mancha"},
-  {operador:"YASAINE MONTERO TAPIA",             carnet:"5418974",    recinto:"Col. Castilla La Mancha"},
-  {operador:"Lucy Belmonte Mollo",               carnet:"4859543",    recinto:"Col. Castilla La Mancha"},
-  {operador:"CINTHIA MARTINEZ CAUNA",            carnet:"9662624",    recinto:"Col. Castilla La Mancha"},
-  {operador:"MARIELA CABRERA CÁCERES",           carnet:"12446350",   recinto:"Col. Castilla La Mancha"},
-  {operador:"Iris Dayana Arispe Peralta",        carnet:"8209408",    recinto:"Col. Castilla La Mancha"},
-  {operador:"David Joel Quiroga Castro",         carnet:"12509433",   recinto:"Col. Castilla La Mancha"},
- 
-  {operador:"Vanessa Rocio Marcelo Polo",        carnet:"8904907",    recinto:"Col. Escuela El Fuerte"},
-  {operador:"Alejandra Ayala Mercado",           carnet:"9758712",    recinto:"Col. Escuela El Fuerte"},
-  {operador:"JOSCELYN ALMENDRAS PINTO",          carnet:"14772815",   recinto:"Col. Escuela El Fuerte"},
-  {operador:"Gelbert Jhonatan Aramayo Ortega",   carnet:"9664599",    recinto:"Col. Escuela El Fuerte"},
-  {operador:"Luis Gerardo Quiroga Castro",       carnet:"13707012",   recinto:"Col. Escuela El Fuerte"},
-  {operador:"Stefani Palaguerra Mamani",         carnet:"8904917",    recinto:"Col. Escuela El Fuerte"},
-  {operador:"rosario ramallo vera",              carnet:"13908214",   recinto:"Col. Escuela El Fuerte"},
- 
-  {operador:"Cinthya Colque Aberanga",           carnet:"8178463",    recinto:"Colegio Ignacio Warnes"},
-  {operador:"Claudia Nataly Torrico Apaza",      carnet:"15258518",   recinto:"Colegio Ignacio Warnes"},
-  {operador:"Alex David Martinez Mancilla",      carnet:"9847825",    recinto:"Colegio Ignacio Warnes"},
-  {operador:"saori lissy Gigliotti Salvatierra", carnet:"11384354",   recinto:"Colegio Ignacio Warnes"},
- 
-  {operador:"CLAUDIA SABINA CESPEDES GUARDIA",   carnet:"4692063",    recinto:"Col. Modulo Nro.5 Elva Antelo Jordan"},
-  {operador:"Cesar Osvaldo Rivera Loayza",       carnet:"13369541",   recinto:"Col. Modulo Nro.5 Elva Antelo Jordan"},
-  {operador:"GABRIELA CESPEDES TEOLOGIDES",      carnet:"14992307",   recinto:"Col. Modulo Nro.5 Elva Antelo Jordan"},
-  {operador:"Dilan Eduardo Tapia Garcia",        carnet:"12793437",   recinto:"Col. Modulo Nro.5 Elva Antelo Jordan"},
-  {operador:"Maria Cristina Flores Quispe",      carnet:"13435459",   recinto:"Col. Modulo Nro.5 Elva Antelo Jordan"},
- 
-  {operador:"Leslie Lizeth Mendoza Moreno",      carnet:"15807343",   recinto:"Col. Escuela Poly Villarroel"},
-  {operador:"Rosalia Blanco Callahuara",         carnet:"12503673",   recinto:"Col. Escuela Poly Villarroel"},
-  {operador:"Liliane Charupá Moreno",            carnet:"9664343",    recinto:"Col. Escuela Poly Villarroel"},
- 
-  {operador:"Jessica karol Pedraza Flores",      carnet:"6207808",    recinto:"Col. Escuela Bolivia Holanda"},
-  {operador:"Claudia Nohelia Quintana Choque",   carnet:"12692791",   recinto:"Col. Escuela Bolivia Holanda"},
-  {operador:"Fidel Barrero Santeyana",           carnet:"12693828",   recinto:"Col. Escuela Bolivia Holanda"},
-  {operador:"Oniela Aguilera Barba",             carnet:"9006747",    recinto:"Col. Escuela Bolivia Holanda"},
-  {operador:"Marioly Mireya Gonzales Chipre",    carnet:"9703020",    recinto:"Col. Escuela Bolivia Holanda"},
-  {operador:"Omar Alejandro Salazar Campos",     carnet:"12727993",   recinto:"Col. Escuela Bolivia Holanda"},
- 
-  {operador:"VALERIA LOPEZ TAPIA",               carnet:"9624951",    recinto:"Col. San Francisco Sur"},
-  {operador:"CARLA ANDREA BANEGAS ALVAREZ",      carnet:"13546960",   recinto:"Col. San Francisco Sur"},
-  {operador:"Eldy Marlene Miranda Anachury",     carnet:"3917172",    recinto:"Col. San Francisco Sur"},
-  {operador:"Samira Milenca Ali Miranda",        carnet:"13977957",   recinto:"Col. San Francisco Sur"},
-  {operador:"Angeline Avila Lahore",             carnet:"12761004",   recinto:"Col. San Francisco Sur"},
- 
-  {operador:"Yessenia Anayansi Averanga Ortega", carnet:"14407928",   recinto:"Col. Esc. Amsterdan"},
-  {operador:"Marco Antonio Saavedra Limpias",    carnet:"4563369",    recinto:"Col. Esc. Amsterdan"},
-  {operador:"JOSE RONALDO CHURQUI HERBAS",       carnet:"8179261",    recinto:"Col. Esc. Amsterdan"},
- 
-  {operador:"Wendy Alvarado Rosas",              carnet:"13144013",   recinto:"Col. Luis Espinal Campos"},
-  {operador:"Alison Ariane Sandoval Guaji",      carnet:"10840452",   recinto:"Col. Luis Espinal Campos"},
-  {operador:"Ruth Karen Saravia Céspedes",       carnet:"9794428",    recinto:"Col. Luis Espinal Campos"},
-  {operador:"luis enrique vaca somoya",          carnet:"7844714",    recinto:"Col. Luis Espinal Campos"},
-  {operador:"Nora mayerly vaca somoya",          carnet:"9714969",    recinto:"Col. Luis Espinal Campos"},
-  {operador:"Maria Cristina Fernandez",          carnet:"12664386",   recinto:"Col. Luis Espinal Campos"},
- 
-  {operador:"Miguel angel Vaca somoya",          carnet:"8131182",    recinto:"Colegio Fuente Del Saber"},
-  {operador:"Moises Alberto Flores Padilla",     carnet:"9771479",    recinto:"Colegio Fuente Del Saber"},
-  {operador:"Diana Cuellar Hurtado",             carnet:"12534748",   recinto:"Colegio Fuente Del Saber"},
- 
-  {operador:"BORIS MARIANO ROJAS PEÑALOZA",      carnet:"10391161",   recinto:"U.E. San Juan del Este"},
-  {operador:"Grover Alain Gutierrez Choque",     carnet:"8215668",    recinto:"U.E. San Juan del Este"},
-  {operador:"Benjamin Joel Gutierrez Choque",    carnet:"14326140",   recinto:"U.E. San Juan del Este"},
-  {operador:"Hilary Gail Sandoval Ortiz",        carnet:"7718109",    recinto:"U.E. San Juan del Este"},
- 
-  {operador:"DAMARIS BELTRAN CHOQUE",            carnet:"8058190",    recinto:"U.E. 19 de Marzo"},
-  {operador:"Heidy Paola Rossellon Zeballo",     carnet:"7705775",    recinto:"U.E. 19 de Marzo"},
- 
-  {operador:"Margarita Pacay Romero",            carnet:"13080452",   recinto:"U.E. Villa Moderna"},
-  {operador:"Jhisel Salvatierra Portugal",       carnet:"14431529",   recinto:"U.E. Villa Moderna"},
- 
-  {operador:"Limberth Isaac Choque Jacinto",     carnet:"8932390",    recinto:"U.E. San Diego de Samaria"},
-  {operador:"Maria Esther Arauz Romero",         carnet:"8207678",    recinto:"U.E. San Diego de Samaria"},
- 
-  {operador:"Jerry Emanuel Garfias Amachuy",     carnet:"9795357",    recinto:"Colegio San Francisco de Asis"},
-  {operador:"Michael Whinston Ticacala Lamas",   carnet:"9827217",    recinto:"Colegio San Francisco de Asis"},
-  {operador:"JUAN MAIKOL CADIMA LLANOS",         carnet:"12918592",   recinto:"Colegio San Francisco de Asis"},
- 
-  {operador:"Junior Acosta Condori",             carnet:"9775748",    recinto:"U.E. Manantial De Vida"},
-  {operador:"Yuciely cuevas torrico",            carnet:"14772721",   recinto:"U.E. Manantial De Vida"},
-  {operador:"Yovani Daza Valdez",                carnet:"8179313",    recinto:"U.E. Manantial De Vida"},
-  {operador:"REYNA RAMOS QUINTANA",              carnet:"13334772",   recinto:"U.E. Manantial De Vida"},
-  {operador:"Erica geobanna Rodriguez Banegas",  carnet:"6268679",    recinto:"U.E. Manantial De Vida"},
-  {operador:"Juan Carlos Rocha flores",          carnet:"7666127",    recinto:"U.E. Manantial De Vida"},
- 
-  {operador:"Carla Lorena Maturano Buezo",       carnet:"8186409",    recinto:"U.E. Paraíso de los Infantes"},
-  {operador:"JOHN BRIAN IRIARTE VEIZAGA",        carnet:"9609581",    recinto:"U.E. Paraíso de los Infantes"},
- 
-  {operador:"Julio Cesar Contreras Cervantes",   carnet:"13546219",   recinto:"U.E. San Francisco Sur (Modulo Secundario)"},
- 
-  {operador:"Carleysy amparo Choré Choré",       carnet:"3203668",    recinto:"U.E. Amsterdam I Primaria"},
- 
-  {operador:"Ruth Morelia MAMANI HERRERA",       carnet:"9964057",    recinto:"Módulo Educativo El Triunfo"},
- 
-  {operador:"JANNINE CALLE ROBLES",              carnet:"6358922",    recinto:"U.E. La Ponderosa"},
- 
-  {operador:"CRISTHIAN DAVID MIRANDA TICONA",    carnet:"13239287",   recinto:"U.E. Hector Saucedo Montaño"},
- 
-  {operador:"Jerson Juniors Rodríguez Ramirez",  carnet:"9783437",    recinto:"U.E. Hortencia Banegas de Pinto"},
- 
-  {operador:"Teresa Marlene Vargas Choque",      carnet:"12354766",   recinto:"U.E. Normandia Thevenet"},
-  {operador:"Juan Diego Paz Umalla",             carnet:"8985852",    recinto:"U.E. Normandia Thevenet"}
+  <script>
+
+    var map = L.map('map').setView([-17.75, -63.11], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+    var marcador;
+
+    // RECINTOS
+    var recintos = {
+      "U.E. 23 de Diciembre J. Carlos Truji": { lat: -17.76983, lng: -63.11529 },
+      "Col. Educativo Cotoca": { lat: -17.74604, lng: -63.11758 },
+      "U.E. El Dorado Norte": { lat: -17.73737, lng: -63.09708 },
+      "U.E. Nuevo Horizonte": { lat: -17.73058, lng: -63.10971 },
+      "U.E. Alfredo Barbery Chavez A": { lat: -17.753441, lng: -63.117965 },
+      "U.E. 26 De Septiembre": { lat: -17.72374, lng: -63.10361 },
+      "Motacusal": { lat: -17.692081, lng: -63.101891 },
+      "Fred Nuñez Gonzales": { lat: -17.717763, lng: -63.069608 },
+      "U.E. Cielito Lindo": { lat: -17.77039, lng: -63.10667 },
+      "Modulo Rancho Nuevo": { lat: -17.74573, lng: -63.12128 },
+      "16 de Febrero": { lat: -17.74796, lng: -63.098754 },
+      "U.E. Señor de los Milagros": { lat: -17.739367, lng: -63.111029 },
+      "U.E. 24 de Marzo": { lat: -17.729421, lng: -63.101308 },
+      "U. E. Módulo El Trapiche": { lat: -17.754408, lng: -63.072771 },
+      "U. E. Módulo Urbanización Cotoca (Prof. Jaime Escalante)": { lat: -17.757409, lng: -63.10226 },
+      "U.E. Santa Ana (Módulo Educativo)": { lat: -17.759478, lng: -63.127031 },
 
 
-];
+      //yusara
+      "U.E. Arroyito": { lat: -17.832749, lng: -63.074306 },
+      "Col. Normandia Josefina Balsamo": { lat: -17.856937, lng: -63.08878 },
+      "Col. Esc. Inocencio Roman": { lat: -17.85023, lng: -63.06305 },
+      "Col. Castilla La Mancha": { lat: -17.847368, lng: -63.090372 },
+      "Col. Escuela El Fuerte": { lat: -17.84582, lng: -63.14807 },
+      "Colegio Ignacio Warnes": { lat: -17.86588, lng: -63.15627 },
+      "Col. Modulo Nro.5 Elva Antelo Jordan": { lat: -17.860051, lng: -63.167451 },
+      "Col. Escuela Poly Villarroel": { lat: -17.8723, lng: -63.1315 },
+      "Col. Escuela Bolivia Holanda": { lat: -17.86903, lng: -63.14489 },
+      "Col. San Francisco Sur": { lat: -17.85275, lng: -63.16087 },
+      "Col. Esc. Amsterdan": { lat: -17.85901, lng: -63.14972 },
+      "Col. Luis Espinal Campos": { lat: -17.86751, lng: -63.16032 },
+      "Colegio Fuente Del Saber": { lat: -17.904652, lng: -63.067523 },
+      "U.E. San Juan del Este": { lat: -17.857377, lng: -63.05619 },
+      "U.E. 19 de Marzo": { lat: -17.86819, lng: -63.08685 },
+      "U.E. Villa Moderna": { lat: -17.844608, lng: -63.068661 },
+      "U.E. San Diego de Samaria": { lat: -17.846505, lng: -63.076237 },
+      "Colegio San Francisco de Asis": { lat: -17.856931, lng: -63.144289 },
+      "U.E. Manantial De Vida": { lat: -17.852235, lng: -63.072591 },
+      "U.E. Paraíso de los Infantes": { lat: -17.849895, lng: -63.067399 },
+      "U.E. San Francisco Sur (Modulo Secundario)": { lat: -17.858701, lng: -63.158146 },
+      "U.E. Amsterdam I Primaria": { lat: -17.862042, lng: -63.151334 },
+      "Módulo Educativo El Triunfo": { lat: -17.866336, lng: -63.150573 },
+      "U.E. La Ponderosa": { lat: -17.872907, lng: -63.161924 },
+      "U.E. Hector Saucedo Montaño": { lat: -17.861428, lng: -63.091736 },
+      "U.E. Hortencia Banegas de Pinto": { lat: -17.89105, lng: -63.170399 },
+      "U.E. Normandia Thevenet": { lat: -17.854785, lng: -63.0906 }
+    };
 
-// AUTOCOMPLETE
-buscarInput = document.getElementById("buscar");
-buscarInput.addEventListener("input", function(){
-let texto = this.value.toLowerCase();
-let cont = document.getElementById("sugerencias");
-cont.innerHTML="";
+    // TODOS LOS OPERADORES
+    var datos = [
 
-if(texto.length<2) return;
+      { operador: "Favio Andres Ramos Avalos", carnet: "9856765", recinto: "U.E. 23 de Diciembre J. Carlos Truji" },
+      { operador: "Gabriel Cuellar Suarez", carnet: "6252604", recinto: "U.E. 23 de Diciembre J. Carlos Truji" },
+      { operador: "Karina Mansilla Mendoza", carnet: "3882903-1G", recinto: "U.E. 23 de Diciembre J. Carlos Truji" },
 
-let res = datos.filter(d=>
-  d.operador.toLowerCase().includes(texto) ||
-  d.carnet.toLowerCase().includes(texto)
-);
+      { operador: "Laura Coimbra Antelo", carnet: "13542161", recinto: "Col. Educativo Cotoca" },
+      { operador: "Camila Céspedes Romero", carnet: "13776074", recinto: "Col. Educativo Cotoca" },
+      { operador: "Eva Jimena Llanos Vedia", carnet: "9708177", recinto: "Col. Educativo Cotoca" },
+      { operador: "Neidy Brigith Marquez Bellido", carnet: "9783750", recinto: "Col. Educativo Cotoca" },
 
-res.forEach(d=>{
-let div = document.createElement("div");
-div.innerHTML = d.operador;
-div.onclick=()=>seleccionar(d);
-cont.appendChild(div);
-});
-});
+      { operador: "CARLA PATRICIA HINOJOSA FLORES", carnet: "12922001", recinto: "U.E. El Dorado Norte" },
+      { operador: "Giselle Mejias Alvarez", carnet: "11342433", recinto: "U.E. El Dorado Norte" },
+      { operador: "Rosario Ruiz Ruiz", carnet: "13635046", recinto: "U.E. El Dorado Norte" },
+      { operador: "ERIKA VILLARROEL ORTIZ", carnet: "9769483", recinto: "U.E. El Dorado Norte" },
+      { operador: "Gardenia Cuevas Ribera", carnet: "13047475", recinto: "U.E. El Dorado Norte" },
+      { operador: "Eliana Ayala Gonzales", carnet: "9033359", recinto: "U.E. El Dorado Norte" },
+      { operador: "Luis Carlos Segales Justiniano", carnet: "7692032", recinto: "U.E. El Dorado Norte" },
+      { operador: "Claribel Daysi Avendaño Rojas", carnet: "6786869", recinto: "U.E. El Dorado Norte" },
 
-function seleccionar(d){
-document.getElementById("buscar").value=d.operador;
-document.getElementById("sugerencias").innerHTML="";
-mostrar(d);
-}
+      { operador: "Yaneth Surubi Posiva", carnet: "7669404", recinto: "U.E. Nuevo Horizonte" },
+      { operador: "Angie Nahomi Melgar Mozombite", carnet: "14930144", recinto: "U.E. Nuevo Horizonte" },
+      { operador: "Robert Salvador Rodríguez Jiménez", carnet: "8864166", recinto: "U.E. Nuevo Horizonte" },
+      { operador: "CARLOS YOEL GUILLEN VACA", carnet: "9836491", recinto: "U.E. Nuevo Horizonte" },
 
-function mostrar(d){
-let u = recintos[d.recinto];
-if(marcador) map.removeLayer(marcador);
-marcador = L.marker([u.lat,u.lng]).addTo(map);
+      { operador: "Amalec Elvia Vasquez Morales", carnet: "7929002", recinto: "U.E. Alfredo Barbery Chavez A" },
+      { operador: "CARLA JOHANY NOGALES MONTERO", carnet: "8137234", recinto: "U.E. Alfredo Barbery Chavez A" },
+      { operador: "Karen Daniela Barrios Velasco", carnet: "6243461", recinto: "U.E. Alfredo Barbery Chavez A" },
+      { operador: "Katherin Paola Saucedo Vargas", carnet: "11317748", recinto: "U.E. Alfredo Barbery Chavez A" },
+      { operador: "Ariana Nogales Diaz", carnet: "9609829", recinto: "U.E. Alfredo Barbery Chavez A" },
+      { operador: "Luz Maria Bedregal Borda", carnet: "10692797", recinto: "U.E. Alfredo Barbery Chavez A" },
 
-let html = `<b>${d.recinto}</b><br><a target="_blank" href="https://www.google.com/maps?q=${u.lat},${u.lng}">🚗 Cómo llegar</a>`;
+      { operador: "Carla yanel Calvimonte Peralta", carnet: "8869984", recinto: "U.E. 26 De Septiembre" },
+      { operador: "Ronald Weimar Chavarría Domínguez", carnet: "10668647", recinto: "U.E. 26 De Septiembre" },
+      { operador: "Sabina Veliz Inocente", carnet: "13637483", recinto: "U.E. 26 De Septiembre" },
+      { operador: "Daniela Michani Flores", carnet: "9652241", recinto: "U.E. 26 De Septiembre" },
+      { operador: "Aracely Pinto Rojas", carnet: "9856400", recinto: "U.E. 26 De Septiembre" },
+      { operador: "Erick Joel Vallejos Garcia", carnet: "8268814", recinto: "U.E. 26 De Septiembre" },
+      { operador: "América Gamarra Rivero", carnet: "8908948", recinto: "U.E. 26 De Septiembre" },
 
-marcador.bindPopup(html);
-map.setView([u.lat,u.lng],17);
-setTimeout(()=>marcador.openPopup(),200);
-}
+      { operador: "ISRAEL WALTER ROJAS MURILLO", carnet: "8061237", recinto: "Motacusal" },
 
-function buscar(){
-let t=document.getElementById("buscar").value.toLowerCase().trim();
+      { operador: "Teodora Poma Vedia", carnet: "5066099", recinto: "Fred Nuñez Gonzales" },
+      { operador: "Maira Fernanda Balderrama Castedo", carnet: "8955024-1F", recinto: "Fred Nuñez Gonzales" },
+      { operador: "Pamela Cordova Ramos", carnet: "9679808", recinto: "Fred Nuñez Gonzales" },
+      { operador: "Michel Alison Calanchi Zuñagua", carnet: "12666767", recinto: "Fred Nuñez Gonzales" },
 
-let d=datos.find(x=>
-  x.operador.toLowerCase().includes(t) ||
-  x.carnet.toLowerCase().includes(t)
-);
+      { operador: "Erika Mico Vilca", carnet: "6214258", recinto: "U.E. Cielito Lindo" },
+      { operador: "Fabiola Aldana Garcia", carnet: "14086451", recinto: "U.E. Cielito Lindo" },
 
-if(d) mostrar(d);
-else alert("No encontrado");
-}
+      { operador: "DANIELA CHUVIRÚ PESOA", carnet: "9614984", recinto: "Modulo Rancho Nuevo" },
+      { operador: "Bridny Ibañez Arias", carnet: "12450775", recinto: "Modulo Rancho Nuevo" },
+      { operador: "PAULA ELOA LEYTON NOGALES", carnet: "13613550", recinto: "Modulo Rancho Nuevo" },
+      { operador: "Ingrid Leila Cadima Espinoza", carnet: "6299402", recinto: "Modulo Rancho Nuevo" },
+      { operador: "Robert Waldome Vidal Condori", carnet: "11348164", recinto: "Modulo Rancho Nuevo" },
+
+      { operador: "JOSE LUIS TERCEROS VACA", carnet: "8167669", recinto: "16 de Febrero" },
+      { operador: "Cesia Caumol Hinojosa", carnet: "14777392", recinto: "16 de Febrero" },
+      { operador: "Jimmy Rodriguez Arroyo", carnet: "13596908", recinto: "16 de Febrero" },
+
+      { operador: "ELIANA MARTHA SIANCAS SOLIZ", carnet: "11408291", recinto: "U.E. Señor de los Milagros" },
+      { operador: "Jorge Alejandro Sandoval Parada", carnet: "6349907", recinto: "U.E. Señor de los Milagros" },
+      { operador: "LOLITA GUZMAN YABETA", carnet: "6225291", recinto: "U.E. Señor de los Milagros" },
+
+      { operador: "Lizeth Alejandra Mareca Vallejos", carnet: "11315898", recinto: "U.E. 24 de Marzo" },
+      { operador: "Alexander Cristopher Tinta Belmonte", carnet: "13271183", recinto: "U.E. 24 de Marzo" },
+      { operador: "Alex Giovanni Chore Taborga", carnet: "8933925", recinto: "U.E. 24 de Marzo" },
+
+      { operador: "María Rosario Surubi Posiva", carnet: "8898933", recinto: "U. E. Módulo El Trapiche" },
+      { operador: "BEBI VARGAS RIOS", carnet: "7847900", recinto: "U. E. Módulo El Trapiche" },
+
+      { operador: "PAOLA ESPINOZA CUELLAR", carnet: "6296377", recinto: "U. E. Módulo Urbanización Cotoca (Prof. Jaime Escalante)" },
+      { operador: "Silvestre Montero Busch", carnet: "6310213", recinto: "U. E. Módulo Urbanización Cotoca (Prof. Jaime Escalante)" },
+      { operador: "LOURDES CACERES JUCHANI", carnet: "11381790", recinto: "U. E. Módulo Urbanización Cotoca (Prof. Jaime Escalante)" },
+      { operador: "CINTHIA PAMELA RODRIGUEZ ROSAS", carnet: "12597322", recinto: "U. E. Módulo Urbanización Cotoca (Prof. Jaime Escalante)" },
+      { operador: "Aldo Alexis Pereyra Zelada", carnet: "3879640", recinto: "U. E. Módulo Urbanización Cotoca (Prof. Jaime Escalante)" },
+      { operador: "Juan Carlos Suarez Cuellar", carnet: "3277885", recinto: "U. E. Módulo Urbanización Cotoca (Prof. Jaime Escalante)" },
+      { operador: "Carla Cecilia Suarez Zeballos", carnet: "7714525", recinto: "U. E. Módulo Urbanización Cotoca (Prof. Jaime Escalante)" },
+
+      { operador: "Maria Emilia Avila Ulloa", carnet: "12663503", recinto: "U.E. Santa Ana (Módulo Educativo)" },
+      { operador: "Eliana marines Barrios Velasco", carnet: "6243462", recinto: "U.E. Santa Ana (Módulo Educativo)" },
 
 
 
-function cerrarAyuda(){
-document.getElementById("modalAyuda").style.display="none";
-}
 
-</script>
+      //yusara
+      { operador: "Natalia Terán Vargas", carnet: "9634440", recinto: "U.E. Arroyito" },
+      { operador: "Paul Condori Nina", carnet: "11304955", recinto: "U.E. Arroyito" },
+      { operador: "Jose Luis Fuentes Vargas", carnet: "8172999", recinto: "U.E. Arroyito" },
+
+      { operador: "Liliana Nicole Mendoza Morales", carnet: "12893240", recinto: "Col. Normandia Josefina Balsamo" },
+      { operador: "Ana Gabriela Torrico Lima Lobo", carnet: "9832635", recinto: "Col. Normandia Josefina Balsamo" },
+      { operador: "Karolaen Ninet Cabrera Ayala", carnet: "9801588", recinto: "Col. Normandia Josefina Balsamo" },
+
+      { operador: "Beatriz Chambi Peñaranda", carnet: "12949054", recinto: "Col. Esc. Inocencio Roman" },
+
+      { operador: "Rita Perez Aponte", carnet: "4720432", recinto: "Col. Castilla La Mancha" },
+      { operador: "YASAINE MONTERO TAPIA", carnet: "5418974", recinto: "Col. Castilla La Mancha" },
+      { operador: "Lucy Belmonte Mollo", carnet: "4859543", recinto: "Col. Castilla La Mancha" },
+      { operador: "CINTHIA MARTINEZ CAUNA", carnet: "9662624", recinto: "Col. Castilla La Mancha" },
+      { operador: "MARIELA CABRERA CÁCERES", carnet: "12446350", recinto: "Col. Castilla La Mancha" },
+      { operador: "Iris Dayana Arispe Peralta", carnet: "8209408", recinto: "Col. Castilla La Mancha" },
+      { operador: "David Joel Quiroga Castro", carnet: "12509433", recinto: "Col. Castilla La Mancha" },
+
+      { operador: "Vanessa Rocio Marcelo Polo", carnet: "8904907", recinto: "Col. Escuela El Fuerte" },
+      { operador: "Alejandra Ayala Mercado", carnet: "9758712", recinto: "Col. Escuela El Fuerte" },
+      { operador: "JOSCELYN ALMENDRAS PINTO", carnet: "14772815", recinto: "Col. Escuela El Fuerte" },
+      { operador: "Gelbert Jhonatan Aramayo Ortega", carnet: "9664599", recinto: "Col. Escuela El Fuerte" },
+      { operador: "Luis Gerardo Quiroga Castro", carnet: "13707012", recinto: "Col. Escuela El Fuerte" },
+      { operador: "Stefani Palaguerra Mamani", carnet: "8904917", recinto: "Col. Escuela El Fuerte" },
+      { operador: "rosario ramallo vera", carnet: "13908214", recinto: "Col. Escuela El Fuerte" },
+
+      { operador: "Cinthya Colque Aberanga", carnet: "8178463", recinto: "Colegio Ignacio Warnes" },
+      { operador: "Claudia Nataly Torrico Apaza", carnet: "15258518", recinto: "Colegio Ignacio Warnes" },
+      { operador: "Alex David Martinez Mancilla", carnet: "9847825", recinto: "Colegio Ignacio Warnes" },
+      { operador: "saori lissy Gigliotti Salvatierra", carnet: "11384354", recinto: "Colegio Ignacio Warnes" },
+
+      { operador: "CLAUDIA SABINA CESPEDES GUARDIA", carnet: "4692063", recinto: "Col. Modulo Nro.5 Elva Antelo Jordan" },
+      { operador: "Cesar Osvaldo Rivera Loayza", carnet: "13369541", recinto: "Col. Modulo Nro.5 Elva Antelo Jordan" },
+      { operador: "GABRIELA CESPEDES TEOLOGIDES", carnet: "14992307", recinto: "Col. Modulo Nro.5 Elva Antelo Jordan" },
+      { operador: "Dilan Eduardo Tapia Garcia", carnet: "12793437", recinto: "Col. Modulo Nro.5 Elva Antelo Jordan" },
+      { operador: "Maria Cristina Flores Quispe", carnet: "13435459", recinto: "Col. Modulo Nro.5 Elva Antelo Jordan" },
+
+      { operador: "Leslie Lizeth Mendoza Moreno", carnet: "15807343", recinto: "Col. Escuela Poly Villarroel" },
+      { operador: "Rosalia Blanco Callahuara", carnet: "12503673", recinto: "Col. Escuela Poly Villarroel" },
+      { operador: "Liliane Charupá Moreno", carnet: "9664343", recinto: "Col. Escuela Poly Villarroel" },
+
+      { operador: "Jessica karol Pedraza Flores", carnet: "6207808", recinto: "Col. Escuela Bolivia Holanda" },
+      { operador: "Claudia Nohelia Quintana Choque", carnet: "12692791", recinto: "Col. Escuela Bolivia Holanda" },
+      { operador: "Fidel Barrero Santeyana", carnet: "12693828", recinto: "Col. Escuela Bolivia Holanda" },
+      { operador: "Oniela Aguilera Barba", carnet: "9006747", recinto: "Col. Escuela Bolivia Holanda" },
+      { operador: "Marioly Mireya Gonzales Chipre", carnet: "9703020", recinto: "Col. Escuela Bolivia Holanda" },
+      { operador: "Omar Alejandro Salazar Campos", carnet: "12727993", recinto: "Col. Escuela Bolivia Holanda" },
+
+      { operador: "VALERIA LOPEZ TAPIA", carnet: "9624951", recinto: "Col. San Francisco Sur" },
+      { operador: "CARLA ANDREA BANEGAS ALVAREZ", carnet: "13546960", recinto: "Col. San Francisco Sur" },
+      { operador: "Eldy Marlene Miranda Anachury", carnet: "3917172", recinto: "Col. San Francisco Sur" },
+      { operador: "Samira Milenca Ali Miranda", carnet: "13977957", recinto: "Col. San Francisco Sur" },
+      { operador: "Angeline Avila Lahore", carnet: "12761004", recinto: "Col. San Francisco Sur" },
+
+      { operador: "Yessenia Anayansi Averanga Ortega", carnet: "14407928", recinto: "Col. Esc. Amsterdan" },
+      { operador: "Marco Antonio Saavedra Limpias", carnet: "4563369", recinto: "Col. Esc. Amsterdan" },
+      { operador: "JOSE RONALDO CHURQUI HERBAS", carnet: "8179261", recinto: "Col. Esc. Amsterdan" },
+
+      { operador: "Wendy Alvarado Rosas", carnet: "13144013", recinto: "Col. Luis Espinal Campos" },
+      { operador: "Alison Ariane Sandoval Guaji", carnet: "10840452", recinto: "Col. Luis Espinal Campos" },
+      { operador: "Ruth Karen Saravia Céspedes", carnet: "9794428", recinto: "Col. Luis Espinal Campos" },
+      { operador: "luis enrique vaca somoya", carnet: "7844714", recinto: "Col. Luis Espinal Campos" },
+      { operador: "Nora mayerly vaca somoya", carnet: "9714969", recinto: "Col. Luis Espinal Campos" },
+      { operador: "Maria Cristina Fernandez", carnet: "12664386", recinto: "Col. Luis Espinal Campos" },
+
+      { operador: "Miguel angel Vaca somoya", carnet: "8131182", recinto: "Colegio Fuente Del Saber" },
+      { operador: "Moises Alberto Flores Padilla", carnet: "9771479", recinto: "Colegio Fuente Del Saber" },
+      { operador: "Diana Cuellar Hurtado", carnet: "12534748", recinto: "Colegio Fuente Del Saber" },
+
+      { operador: "BORIS MARIANO ROJAS PEÑALOZA", carnet: "10391161", recinto: "U.E. San Juan del Este" },
+      { operador: "Grover Alain Gutierrez Choque", carnet: "8215668", recinto: "U.E. San Juan del Este" },
+      { operador: "Benjamin Joel Gutierrez Choque", carnet: "14326140", recinto: "U.E. San Juan del Este" },
+      { operador: "Hilary Gail Sandoval Ortiz", carnet: "7718109", recinto: "U.E. San Juan del Este" },
+
+      { operador: "DAMARIS BELTRAN CHOQUE", carnet: "8058190", recinto: "U.E. 19 de Marzo" },
+      { operador: "Heidy Paola Rossellon Zeballo", carnet: "7705775", recinto: "U.E. 19 de Marzo" },
+
+      { operador: "Margarita Pacay Romero", carnet: "13080452", recinto: "U.E. Villa Moderna" },
+      { operador: "Jhisel Salvatierra Portugal", carnet: "14431529", recinto: "U.E. Villa Moderna" },
+
+      { operador: "Limberth Isaac Choque Jacinto", carnet: "8932390", recinto: "U.E. San Diego de Samaria" },
+      { operador: "Maria Esther Arauz Romero", carnet: "8207678", recinto: "U.E. San Diego de Samaria" },
+
+      { operador: "Jerry Emanuel Garfias Amachuy", carnet: "9795357", recinto: "Colegio San Francisco de Asis" },
+      { operador: "Michael Whinston Ticacala Lamas", carnet: "9827217", recinto: "Colegio San Francisco de Asis" },
+      { operador: "JUAN MAIKOL CADIMA LLANOS", carnet: "12918592", recinto: "Colegio San Francisco de Asis" },
+
+      { operador: "Junior Acosta Condori", carnet: "9775748", recinto: "U.E. Manantial De Vida" },
+      { operador: "Yuciely cuevas torrico", carnet: "14772721", recinto: "U.E. Manantial De Vida" },
+      { operador: "Yovani Daza Valdez", carnet: "8179313", recinto: "U.E. Manantial De Vida" },
+      { operador: "REYNA RAMOS QUINTANA", carnet: "13334772", recinto: "U.E. Manantial De Vida" },
+      { operador: "Erica geobanna Rodriguez Banegas", carnet: "6268679", recinto: "U.E. Manantial De Vida" },
+      { operador: "Juan Carlos Rocha flores", carnet: "7666127", recinto: "U.E. Manantial De Vida" },
+
+      { operador: "Carla Lorena Maturano Buezo", carnet: "8186409", recinto: "U.E. Paraíso de los Infantes" },
+      { operador: "JOHN BRIAN IRIARTE VEIZAGA", carnet: "9609581", recinto: "U.E. Paraíso de los Infantes" },
+
+      { operador: "Julio Cesar Contreras Cervantes", carnet: "13546219", recinto: "U.E. San Francisco Sur (Modulo Secundario)" },
+
+      { operador: "Carleysy amparo Choré Choré", carnet: "3203668", recinto: "U.E. Amsterdam I Primaria" },
+
+      { operador: "Ruth Morelia MAMANI HERRERA", carnet: "9964057", recinto: "Módulo Educativo El Triunfo" },
+
+      { operador: "JANNINE CALLE ROBLES", carnet: "6358922", recinto: "U.E. La Ponderosa" },
+
+      { operador: "CRISTHIAN DAVID MIRANDA TICONA", carnet: "13239287", recinto: "U.E. Hector Saucedo Montaño" },
+
+      { operador: "Jerson Juniors Rodríguez Ramirez", carnet: "9783437", recinto: "U.E. Hortencia Banegas de Pinto" },
+
+      { operador: "Teresa Marlene Vargas Choque", carnet: "12354766", recinto: "U.E. Normandia Thevenet" },
+      { operador: "Juan Diego Paz Umalla", carnet: "8985852", recinto: "U.E. Normandia Thevenet" }
+
+
+    ];
+
+    // AUTOCOMPLETE
+    buscarInput = document.getElementById("buscar");
+    buscarInput.addEventListener("input", function () {
+      let texto = this.value.toLowerCase();
+      let cont = document.getElementById("sugerencias");
+      cont.innerHTML = "";
+
+      if (texto.length < 2) return;
+
+      let res = datos.filter(d =>
+        d.operador.toLowerCase().includes(texto) ||
+        d.carnet.toLowerCase().includes(texto)
+      );
+
+      res.forEach(d => {
+        let div = document.createElement("div");
+        div.innerHTML = d.operador;
+        div.onclick = () => seleccionar(d);
+        cont.appendChild(div);
+      });
+    });
+
+    function seleccionar(d) {
+      document.getElementById("buscar").value = d.operador;
+      document.getElementById("sugerencias").innerHTML = "";
+      mostrar(d);
+    }
+
+    function mostrar(d) {
+      let u = recintos[d.recinto];
+      if (marcador) map.removeLayer(marcador);
+      marcador = L.marker([u.lat, u.lng]).addTo(map);
+
+      let html = `<b>${d.recinto}</b><br><a target="_blank" href="https://www.google.com/maps?q=${u.lat},${u.lng}">🚗 Cómo llegar</a>`;
+
+      marcador.bindPopup(html);
+      map.setView([u.lat, u.lng], 17);
+      setTimeout(() => marcador.openPopup(), 200);
+    }
+
+    function buscar() {
+      let t = document.getElementById("buscar").value.toLowerCase().trim();
+
+      let d = datos.find(x =>
+        x.operador.toLowerCase().includes(t) ||
+        x.carnet.toLowerCase().includes(t)
+      );
+
+      if (d) mostrar(d);
+      else alert("No encontrado");
+    }
+
+
+
+    function cerrarAyuda() {
+      document.getElementById("modalAyuda").style.display = "none";
+    }
+
+  </script>
 
 </body>
+
 </html>
