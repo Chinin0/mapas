@@ -199,17 +199,76 @@
                     <span>2</span>
                     <p>Presiona transmitir</p>
                     <img src="img/tansmitir.png" onclick="verImagen(this.src)">
-                 </div>
+                </div>
 
                 <div class="paso">
                     <span>3</span>
                     <p>Salir de la aplicación, cerrarla y entrar de nuevo</p>
                 </div>
 
-                    <div class="paso">
-                        <span>4</span>
-                        <p>Borrar caché y datos de la aplicación (EN CASO DE QUE LOS ANTERIORES PASOS NO FUNCIONEN)</p>
-                    </div>
+                <div class="paso">
+                    <span>4</span>
+                    <p>Borrar caché y datos de la aplicación (EN CASO DE QUE LOS ANTERIORES PASOS NO FUNCIONEN)</p>
+                </div>
+
+
+            </div>
+
+            <!-- 
+
+        <div class="card">
+            <h4>📍 No aparece el mapa</h4>
+            <p>Revisa tu conexión a internet o recarga la página.</p>
+            <img src="img/mapa.png">
+        </div>
+
+        <div class="card">
+            <h4>🚗 Cómo llegar</h4>
+            <p>Presiona el botón "Cómo llegar" para abrir Google Maps.</p>
+            <img src="img/llegar.png">
+        </div>
+
+        <div class="card">
+            <h4>📱 No funciona en celular</h4>
+            <p>Usa Chrome o actualiza tu navegador.</p>
+            <img src="img/celular.png">
+        </div> -->
+
+        </div>
+
+        <div class="card">
+            <h4>⚠️ INFORMACIÓN NO ENVIADA</h4>
+            <p>Cuando la información no se envía, queda con el último icono en gris.</p>
+
+            <img src="img/enviado.jpeg" onclick="verImagen(this.src)">
+
+            <!-- BOTON -->
+            <button class="btn-toggle" onclick="toggleInfo(this)">
+                🔧 Cómo resolver
+            </button>
+
+            <!-- CONTENIDO -->
+            <div class="info-extra">
+                <div class="paso">
+                    <span>1</span>
+                    <p>Presiona varias veces el botón actualizar</p>
+                    <img src="img/actualizar.png" class="img-pequena" onclick="verImagen(this.src)">
+                </div>
+                <div class="paso">
+                    <span>2</span>
+                    <p>Presiona transmitir</p>
+                    <img src="img/tansmitir.png" onclick="verImagen(this.src)">
+                </div>
+
+                <div class="paso">
+                    <span>3</span>
+                    <p>Salir de la aplicación, cerrarla y entrar de nuevo</p>
+                </div>
+
+                <div class="paso">
+                    <span>4</span>
+                    <p>Borrar caché y datos de la aplicación (EN CASO DE QUE LOS ANTERIORES PASOS NO FUNCIONEN)</p>
+                </div>
 
 
             </div>
@@ -238,6 +297,7 @@
         <div class="modal-img" id="modalImg" onclick="cerrarImagen()">
             <img id="imgGrande">
         </div>
+
     </div>
 </body>
 
