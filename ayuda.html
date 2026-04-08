@@ -1,320 +1,662 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ayuda</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayuda</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    :root {
-      --blue: #2563eb; --blue-mid: #dbeafe; --blue-dark: #1e40af;
-      --warn-bg: #fffbeb;   --warn-text: #92400e;
-      --ok-bg: #f0fdf4;     --ok-text: #166534;
-      --info-bg: #eff6ff;   --info-text: #1e40af;
-      --danger-bg: #fef2f2; --danger-text: #991b1b;
-      --gray-50: #f9fafb; --gray-100: #f3f4f6; --gray-200: #e5e7eb;
-      --gray-300: #d1d5db; --gray-400: #9ca3af; --gray-600: #4b5563;
-      --gray-700: #374151; --gray-900: #111827;
-      --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px;
-    }
+        :root {
+            --blue: #2563eb;
+            --blue-mid: #dbeafe;
+            --blue-dark: #1e40af;
+            --warn-bg: #fffbeb;
+            --warn-text: #92400e;
+            --ok-bg: #f0fdf4;
+            --ok-text: #166534;
+            --info-bg: #eff6ff;
+            --info-text: #1e40af;
+            --danger-bg: #fef2f2;
+            --danger-text: #991b1b;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-900: #111827;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+        }
 
-    body { font-family: 'DM Sans', Arial, sans-serif; background: var(--gray-50); color: var(--gray-900); min-height: 100vh; }
+        body {
+            font-family: 'DM Sans', Arial, sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-900);
+            min-height: 100vh;
+        }
 
-    .navbar { background: var(--blue); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
-    .navbar h1 { color: white; font-size: 17px; font-weight: 600; }
-    .btn-back { background: rgba(255,255,255,0.15); color: white; border: none; padding: 7px 14px; border-radius: var(--radius-sm); font-size: 13px; font-family: inherit; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.15s; }
-    .btn-back:hover { background: rgba(255,255,255,0.25); }
+        .navbar {
+            background: var(--blue);
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
-    .hero { background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%); padding: 28px 20px 24px; text-align: center; }
-    .hero p { color: rgba(255,255,255,0.85); font-size: 14px; margin-bottom: 14px; }
-    .search-wrap { position: relative; max-width: 480px; margin: 0 auto; }
-    .search-wrap svg { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--gray-400); pointer-events: none; }
-    .search-wrap input { width: 100%; padding: 11px 16px 11px 40px; border: none; border-radius: var(--radius-md); font-size: 14px; font-family: inherit; outline: none; color: var(--gray-900); }
-    .search-wrap input::placeholder { color: var(--gray-400); }
+        .navbar h1 {
+            color: white;
+            font-size: 17px;
+            font-weight: 600;
+        }
 
-    .container { max-width: 640px; margin: 0 auto; padding: 18px 16px 40px; }
+        .btn-back {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: none;
+            padding: 7px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.15s;
+        }
 
-    .cats { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
-    .cat-btn { padding: 5px 13px; border-radius: 20px; border: 1.5px solid var(--gray-200); background: white; color: var(--gray-600); font-size: 13px; font-family: inherit; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
-    .cat-btn:hover { border-color: var(--blue); color: var(--blue); }
-    .cat-btn.active { background: var(--blue); border-color: var(--blue); color: white; font-weight: 500; }
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
 
-    .result-count { font-size: 12px; color: var(--gray-400); margin-bottom: 10px; }
+        .hero {
+            background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+            padding: 28px 20px 24px;
+            text-align: center;
+        }
 
-    .faq-card { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); margin-bottom: 10px; overflow: hidden; transition: border-color 0.15s; }
-    .faq-card:hover { border-color: var(--gray-300); }
+        .hero p {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 14px;
+            margin-bottom: 14px;
+        }
 
-    .faq-header { display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
-    .faq-icon { width: 38px; height: 38px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-    .icon-warn { background: var(--warn-bg); }
-    .icon-conn { background: var(--danger-bg); }
-    .icon-gps  { background: var(--ok-bg); }
-    .icon-app  { background: var(--info-bg); }
+        .search-wrap {
+            position: relative;
+            max-width: 480px;
+            margin: 0 auto;
+        }
 
-    .faq-meta { flex: 1; min-width: 0; }
-    .faq-title { font-size: 14px; font-weight: 500; color: var(--gray-900); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .faq-sub { font-size: 12px; color: var(--gray-400); }
+        .search-wrap svg {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-400);
+            pointer-events: none;
+        }
 
-    .faq-badge { font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 20px; flex-shrink: 0; }
-    .badge-warn   { background: var(--warn-bg);   color: var(--warn-text); }
-    .badge-ok     { background: var(--ok-bg);     color: var(--ok-text); }
-    .badge-info   { background: var(--info-bg);   color: var(--info-text); }
-    .badge-danger { background: var(--danger-bg); color: var(--danger-text); }
+        .search-wrap input {
+            width: 100%;
+            padding: 11px 16px 11px 40px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            color: var(--gray-900);
+        }
 
-    .faq-chevron { color: var(--gray-300); transition: transform 0.25s ease; flex-shrink: 0; }
-    .faq-card.open .faq-chevron { transform: rotate(180deg); }
+        .search-wrap input::placeholder {
+            color: var(--gray-400);
+        }
 
-    .faq-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
-    .faq-card.open .faq-body { max-height: 3000px; }
-    .faq-inner { border-top: 1px solid var(--gray-100); padding: 14px 16px 16px; }
-    .faq-desc { font-size: 13px; color: var(--gray-600); line-height: 1.6; margin-bottom: 12px; }
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 18px 16px 40px;
+        }
 
-    /* Imagen del problema */
-    .problem-img {
-      width: 100%; max-height: 180px; object-fit: contain;
-      border-radius: var(--radius-sm); border: 1px solid var(--gray-100);
-      margin-bottom: 14px; cursor: pointer; display: block;
-      background: var(--gray-50);
-    }
+        .cats {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
 
-    /* Pasos */
-    .steps { display: flex; flex-direction: column; gap: 8px; }
-    .step {
-      display: flex; align-items: flex-start; gap: 10px;
-      padding: 10px 12px; background: var(--gray-50);
-      border-radius: var(--radius-sm); border: 1px solid var(--gray-100);
-    }
-    .step-num {
-      width: 22px; height: 22px; border-radius: 50%;
-      background: var(--blue-mid); color: var(--blue-dark);
-      font-size: 12px; font-weight: 600;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; margin-top: 2px;
-    }
-    .step-body { flex: 1; min-width: 0; }
+        .cat-btn {
+            padding: 5px 13px;
+            border-radius: 20px;
+            border: 1.5px solid var(--gray-200);
+            background: white;
+            color: var(--gray-600);
+            font-size: 13px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
 
-    /* Fila: texto + miniatura */
-    .step-row { display: flex; align-items: center; gap: 10px; }
-    .step-text { flex: 1; min-width: 0; }
-    .step-text p { font-size: 13px; color: var(--gray-700); line-height: 1.5; }
-    .step-note { font-size: 11px; color: var(--gray-400); margin-top: 3px; }
+        .cat-btn:hover {
+            border-color: var(--blue);
+            color: var(--blue);
+        }
 
-    /* Miniatura del paso */
-    .step-thumb {
-      width: 54px; height: 54px; object-fit: cover;
-      border-radius: 6px; border: 1px solid var(--gray-200);
-      cursor: pointer; flex-shrink: 0;
-      transition: transform 0.15s, border-color 0.15s;
-      background: var(--gray-100);
-    }
-    .step-thumb:hover { transform: scale(1.07); border-color: var(--blue); }
+        .cat-btn.active {
+            background: var(--blue);
+            border-color: var(--blue);
+            color: white;
+            font-weight: 500;
+        }
 
-    /* Video inline */
-    .step-video { margin-top: 10px; border-radius: var(--radius-sm); overflow: hidden; background: black; }
-    .step-video video { width: 100%; max-height: 210px; display: block; }
-    .step-video iframe { width: 100%; height: 190px; border: none; display: block; }
+        .result-count {
+            font-size: 12px;
+            color: var(--gray-400);
+            margin-bottom: 10px;
+        }
 
-    /* Modal imagen */
-    .modal-img { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.82); justify-content: center; align-items: center; z-index: 999; padding: 20px; }
-    .modal-img.active { display: flex; }
-    .modal-img img { max-width: 100%; max-height: 90vh; border-radius: var(--radius-md); object-fit: contain; }
+        .faq-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            margin-bottom: 10px;
+            overflow: hidden;
+            transition: border-color 0.15s;
+        }
 
-    @media (max-width: 400px) { .faq-badge { display: none; } }
-  </style>
+        .faq-card:hover {
+            border-color: var(--gray-300);
+        }
+
+        .faq-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .faq-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .icon-warn {
+            background: var(--warn-bg);
+        }
+
+        .icon-conn {
+            background: var(--danger-bg);
+        }
+
+        .icon-gps {
+            background: var(--ok-bg);
+        }
+
+        .icon-app {
+            background: var(--info-bg);
+        }
+
+        .faq-meta {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .faq-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-900);
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .faq-sub {
+            font-size: 12px;
+            color: var(--gray-400);
+        }
+
+        .faq-badge {
+            font-size: 11px;
+            font-weight: 500;
+            padding: 3px 9px;
+            border-radius: 20px;
+            flex-shrink: 0;
+        }
+
+        .badge-warn {
+            background: var(--warn-bg);
+            color: var(--warn-text);
+        }
+
+        .badge-ok {
+            background: var(--ok-bg);
+            color: var(--ok-text);
+        }
+
+        .badge-info {
+            background: var(--info-bg);
+            color: var(--info-text);
+        }
+
+        .badge-danger {
+            background: var(--danger-bg);
+            color: var(--danger-text);
+        }
+
+        .faq-chevron {
+            color: var(--gray-300);
+            transition: transform 0.25s ease;
+            flex-shrink: 0;
+        }
+
+        .faq-card.open .faq-chevron {
+            transform: rotate(180deg);
+        }
+
+        .faq-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+
+        .faq-card.open .faq-body {
+            max-height: 3000px;
+        }
+
+        .faq-inner {
+            border-top: 1px solid var(--gray-100);
+            padding: 14px 16px 16px;
+        }
+
+        .faq-desc {
+            font-size: 13px;
+            color: var(--gray-600);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        /* Imagen del problema */
+        .problem-img {
+            width: 100%;
+            max-height: 180px;
+            object-fit: contain;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--gray-100);
+            margin-bottom: 14px;
+            cursor: pointer;
+            display: block;
+            background: var(--gray-50);
+        }
+
+        /* Pasos */
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 12px;
+            background: var(--gray-50);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--gray-100);
+        }
+
+        .step-num {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--blue-mid);
+            color: var(--blue-dark);
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .step-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* Fila: texto + miniatura */
+        .step-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .step-text p {
+            font-size: 13px;
+            color: var(--gray-700);
+            line-height: 1.5;
+        }
+
+        .step-note {
+            font-size: 11px;
+            color: var(--gray-400);
+            margin-top: 3px;
+        }
+
+        /* Miniatura del paso */
+        .step-thumb {
+            width: 54px;
+            height: 54px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid var(--gray-200);
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: transform 0.15s, border-color 0.15s;
+            background: var(--gray-100);
+        }
+
+        .step-thumb:hover {
+            transform: scale(1.07);
+            border-color: var(--blue);
+        }
+
+        /* Video inline */
+        .step-video {
+            margin-top: 10px;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            background: black;
+        }
+
+        .step-video video {
+            width: 100%;
+            max-height: 210px;
+            display: block;
+        }
+
+        .step-video iframe {
+            width: 100%;
+            height: 190px;
+            border: none;
+            display: block;
+        }
+
+        /* Modal imagen */
+        .modal-img {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.82);
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            padding: 20px;
+        }
+
+        .modal-img.active {
+            display: flex;
+        }
+
+        .modal-img img {
+            max-width: 100%;
+            max-height: 90vh;
+            border-radius: var(--radius-md);
+            object-fit: contain;
+        }
+
+        @media (max-width: 400px) {
+            .faq-badge {
+                display: none;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-<nav class="navbar">
-  <h1>Centro de Ayuda</h1>
-  <button class="btn-back" onclick="history.back()">
-    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-    Volver
-  </button>
-</nav>
+    <nav class="navbar">
+        <h1>Centro de Ayuda</h1>
+        <button class="btn-back" onclick="history.back()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M19 12H5M12 5l-7 7 7 7" />
+            </svg>
+            Volver
+        </button>
+    </nav>
 
-<div class="hero">
-  <p>¿En qué podemos ayudarte?</p>
-  <div class="search-wrap">
-    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-    <input type="text" id="search" placeholder="Buscar un problema..." oninput="filtrar()">
-  </div>
-</div>
+    <div class="hero">
+        <p>¿En qué podemos ayudarte?</p>
+        <div class="search-wrap">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+            </svg>
+            <input type="text" id="search" placeholder="Buscar un problema..." oninput="filtrar()">
+        </div>
+    </div>
 
-<div class="container">
-  <div class="cats" id="cats"></div>
-  <div class="result-count" id="count"></div>
-  <div id="lista"></div>
-</div>
+    <div class="container">
+        <div class="cats" id="cats"></div>
+        <div class="result-count" id="count"></div>
+        <div id="lista"></div>
+    </div>
 
-<div class="modal-img" id="modalImg" onclick="cerrarImagen()">
-  <img id="imgGrande" src="" alt="Vista ampliada">
-</div>
+    <div class="modal-img" id="modalImg" onclick="cerrarImagen()">
+        <img id="imgGrande" src="" alt="Vista ampliada">
+    </div>
 
-<script>
-/*
-================================================================
-  CATEGORÍAS
-  Agrega nuevas líneas aquí.
-  La clave debe coincidir con el campo "cat" de cada FAQ.
-  Ejemplo:  nueva: "Mi categoría"
-================================================================
-*/
-const cats = {
-  all:      "Todas",
-  envio:    "Envío",
-  conexion: "Conexión",
-  gps:      "GPS",
-  app:      "Aplicación"
-};
+    <script>
+        /*
+        ================================================================
+          CATEGORÍAS
+          Agrega nuevas líneas aquí.
+          La clave debe coincidir con el campo "cat" de cada FAQ.
+          Ejemplo:  nueva: "Mi categoría"
+        ================================================================
+        */
+        const cats = {
+            all: "Todas",
+            envio: "Envío",
+            conexion: "Conexión",
+            gps: "GPS",
+            app: "Aplicación"
+        };
 
-/*
-================================================================
-  PREGUNTAS FRECUENTES
-================================================================
-Cada item puede tener:
+        /*
+        ================================================================
+          PREGUNTAS FRECUENTES
+        ================================================================
+        Cada item puede tener:
+        
+          id          → número único
+          cat         → clave de categoría (debe existir en `cats`)
+          icon        → emoji
+          iconClass   → "icon-warn" | "icon-conn" | "icon-gps" | "icon-app"
+          title       → título del problema
+          sub         → subtítulo breve (opcional)
+          badge       → texto del badge
+          badgeClass  → "badge-warn" | "badge-ok" | "badge-info" | "badge-danger"
+          desc        → descripción del problema
+          img         → imagen del PROBLEMA (opcional). Ej: "img/enviado.jpeg"
+        
+          steps → array de pasos. Cada paso puede tener:
+            txt   → texto del paso (obligatorio)
+            note  → aclaración pequeña en gris (opcional, puede ser "")
+            img   → miniatura 54×54 a la derecha del texto (opcional)
+                    Ej: "img/boton_actualizar.png"
+            video → video debajo del texto (opcional). Puede ser:
+                      - archivo local:  "video/demo.mp4"
+                      - YouTube embed:  "https://www.youtube.com/embed/ID_DEL_VIDEO"
+        ================================================================
+        */
+        const faqs = [
+            {
+                id: 1,
+                cat: "envio",
+                icon: "⚠️",
+                iconClass: "icon-warn",
+                title: "Información no enviada",
+                sub: "Último ícono en gris",
+                badge: "Frecuente",
+                badgeClass: "badge-warn",
+                desc: "Cuando la información no se envía correctamente, el último ícono de estado queda en gris.",
+                img: "img/enviado.jpeg",
+                steps: [
+                    {
+                        txt: "Presiona varias veces el botón actualizar",
+                        note: "",
+                        img: "img/actualizar.png"
+                    },
+                    {
+                        txt: "Presiona el botón transmitir",
+                        note: "",
+                        img: "img/tansmitir.png"
+                        /* Para agregar video a este paso, descomenta la línea de abajo: */
+                        /* video: "video/como_transmitir.mp4" */
+                    },
+                    {
+                        txt: "Cierra la aplicación completamente y vuelve a abrirla",
+                        note: ""
+                    },
+                    {
+                        txt: "Borra el caché y los datos de la aplicación",
+                        note: "Solo si los pasos anteriores no funcionaron"
+                    }
+                ]
+            },
+            {
+                id: 2,
+                cat: "conexion",
+                icon: "📶",
+                iconClass: "icon-conn",
+                title: "Sin conexión a internet",
+                sub: "Wi-Fi o datos móviles",
+                badge: "Frecuente",
+                badgeClass: "badge-warn",
+                desc: "La aplicación necesita conexión activa para enviar y recibir datos.",
+                steps: [
+                    { txt: "Verifica que el Wi-Fi o los datos móviles estén activados", note: "" },
+                    { txt: "Desconéctate y vuelve a conectarte a la red", note: "" },
+                    { txt: "Reinicia el dispositivo si el problema persiste", note: "" }
+                ]
+            },
+            {
+                id: 3,
+                cat: "gps",
+                icon: "📍",
+                iconClass: "icon-gps",
+                title: "GPS no detectado",
+                sub: "Permisos de ubicación",
+                badge: "GPS",
+                badgeClass: "badge-ok",
+                desc: "La aplicación necesita acceso a tu ubicación para registrar correctamente la actividad.",
+                steps: [
+                    { txt: "Ve a Ajustes → Privacidad → Ubicación", note: "" },
+                    { txt: "Activa el permiso de ubicación para esta aplicación", note: "" },
+                    { txt: "Asegúrate de estar en una zona con señal GPS", note: "En lugares cerrados puede fallar" }
+                ]
+            },
+            {
+                id: 4,
+                cat: "app",
+                icon: "🔄",
+                iconClass: "icon-app",
+                title: "La aplicación se cierra sola",
+                sub: "Versión desactualizada",
+                badge: "App",
+                badgeClass: "badge-info",
+                desc: "Si la aplicación se cierra inesperadamente puede deberse a una versión desactualizada o caché lleno.",
+                steps: [
+                    { txt: "Abre la tienda de aplicaciones y busca actualizaciones", note: "" },
+                    { txt: "Borra el caché de la app en Ajustes", note: "" },
+                    { txt: "Desinstala y vuelve a instalar la aplicación", note: "No perderás los datos almacenados en el servidor" }
+                ]
+            },
+            {
+                id: 5,
+                cat: "app",
+                icon: "🎥",
+                iconClass: "icon-app",
+                title: "Llenado de actas",
+                sub: "Video explicativo",
+                badge: "Guía",
+                badgeClass: "badge-info",
+                desc: "A continuación se muestra un video explicativo sobre el llenado de actas en la aplicación.",
+                steps: [
+                    {
+                        txt: "Mira el siguiente video para aprender el proceso completo:",
+                        note: "",
+                        video: "img/llenado.mp4"
+                    }
+                ]
+            }
+        ];
 
-  id          → número único
-  cat         → clave de categoría (debe existir en `cats`)
-  icon        → emoji
-  iconClass   → "icon-warn" | "icon-conn" | "icon-gps" | "icon-app"
-  title       → título del problema
-  sub         → subtítulo breve (opcional)
-  badge       → texto del badge
-  badgeClass  → "badge-warn" | "badge-ok" | "badge-info" | "badge-danger"
-  desc        → descripción del problema
-  img         → imagen del PROBLEMA (opcional). Ej: "img/enviado.jpeg"
+        /* ============================================================
+           LÓGICA — no necesitas modificar nada de aquí en adelante
+           ============================================================ */
+        let catActual = "all";
 
-  steps → array de pasos. Cada paso puede tener:
-    txt   → texto del paso (obligatorio)
-    note  → aclaración pequeña en gris (opcional, puede ser "")
-    img   → miniatura 54×54 a la derecha del texto (opcional)
-            Ej: "img/boton_actualizar.png"
-    video → video debajo del texto (opcional). Puede ser:
-              - archivo local:  "video/demo.mp4"
-              - YouTube embed:  "https://www.youtube.com/embed/ID_DEL_VIDEO"
-================================================================
-*/
-const faqs = [
-  {
-    id: 1,
-    cat: "envio",
-    icon: "⚠️",
-    iconClass: "icon-warn",
-    title: "Información no enviada",
-    sub: "Último ícono en gris",
-    badge: "Frecuente",
-    badgeClass: "badge-warn",
-    desc: "Cuando la información no se envía correctamente, el último ícono de estado queda en gris.",
-    img: "img/enviado.jpeg",
-    steps: [
-      {
-        txt: "Presiona varias veces el botón actualizar",
-        note: "",
-        img: "img/actualizar.png"
-      },
-      {
-        txt: "Presiona el botón transmitir",
-        note: "",
-        img: "img/tansmitir.png"
-        /* Para agregar video a este paso, descomenta la línea de abajo: */
-        /* video: "video/como_transmitir.mp4" */
-      },
-      {
-        txt: "Cierra la aplicación completamente y vuelve a abrirla",
-        note: ""
-      },
-      {
-        txt: "Borra el caché y los datos de la aplicación",
-        note: "Solo si los pasos anteriores no funcionaron"
-      }
-    ]
-  },
-  {
-    id: 2,
-    cat: "conexion",
-    icon: "📶",
-    iconClass: "icon-conn",
-    title: "Sin conexión a internet",
-    sub: "Wi-Fi o datos móviles",
-    badge: "Frecuente",
-    badgeClass: "badge-warn",
-    desc: "La aplicación necesita conexión activa para enviar y recibir datos.",
-    steps: [
-      { txt: "Verifica que el Wi-Fi o los datos móviles estén activados", note: "" },
-      { txt: "Desconéctate y vuelve a conectarte a la red", note: "" },
-      { txt: "Reinicia el dispositivo si el problema persiste", note: "" }
-    ]
-  },
-  {
-    id: 3,
-    cat: "gps",
-    icon: "📍",
-    iconClass: "icon-gps",
-    title: "GPS no detectado",
-    sub: "Permisos de ubicación",
-    badge: "GPS",
-    badgeClass: "badge-ok",
-    desc: "La aplicación necesita acceso a tu ubicación para registrar correctamente la actividad.",
-    steps: [
-      { txt: "Ve a Ajustes → Privacidad → Ubicación", note: "" },
-      { txt: "Activa el permiso de ubicación para esta aplicación", note: "" },
-      { txt: "Asegúrate de estar en una zona con señal GPS", note: "En lugares cerrados puede fallar" }
-    ]
-  },
-  {
-    id: 4,
-    cat: "app",
-    icon: "🔄",
-    iconClass: "icon-app",
-    title: "La aplicación se cierra sola",
-    sub: "Versión desactualizada",
-    badge: "App",
-    badgeClass: "badge-info",
-    desc: "Si la aplicación se cierra inesperadamente puede deberse a una versión desactualizada o caché lleno.",
-    steps: [
-      { txt: "Abre la tienda de aplicaciones y busca actualizaciones", note: "" },
-      { txt: "Borra el caché de la app en Ajustes", note: "" },
-      { txt: "Desinstala y vuelve a instalar la aplicación", note: "No perderás los datos almacenados en el servidor" }
-    ]
-  }
-];
+        function renderCats() {
+            document.getElementById("cats").innerHTML = Object.entries(cats).map(([k, v]) =>
+                `<button class="cat-btn${catActual === k ? ' active' : ''}" onclick="setCat('${k}')">${v}</button>`
+            ).join("");
+        }
 
-/* ============================================================
-   LÓGICA — no necesitas modificar nada de aquí en adelante
-   ============================================================ */
-let catActual = "all";
+        function setCat(c) { catActual = c; renderCats(); filtrar(); }
 
-function renderCats() {
-  document.getElementById("cats").innerHTML = Object.entries(cats).map(([k, v]) =>
-    `<button class="cat-btn${catActual === k ? ' active' : ''}" onclick="setCat('${k}')">${v}</button>`
-  ).join("");
-}
+        function filtrar() {
+            const q = document.getElementById("search").value.toLowerCase();
+            const items = faqs.filter(f => {
+                const matchCat = catActual === "all" || f.cat === catActual;
+                const matchQ = !q || f.title.toLowerCase().includes(q) || f.desc.toLowerCase().includes(q);
+                return matchCat && matchQ;
+            });
 
-function setCat(c) { catActual = c; renderCats(); filtrar(); }
+            document.getElementById("count").textContent =
+                items.length + " resultado" + (items.length !== 1 ? "s" : "");
 
-function filtrar() {
-  const q = document.getElementById("search").value.toLowerCase();
-  const items = faqs.filter(f => {
-    const matchCat = catActual === "all" || f.cat === catActual;
-    const matchQ = !q || f.title.toLowerCase().includes(q) || f.desc.toLowerCase().includes(q);
-    return matchCat && matchQ;
-  });
-
-  document.getElementById("count").textContent =
-    items.length + " resultado" + (items.length !== 1 ? "s" : "");
-
-  if (!items.length) {
-    document.getElementById("lista").innerHTML =
-      `<div style="text-align:center;padding:3rem 1rem;color:var(--gray-400)">
+            if (!items.length) {
+                document.getElementById("lista").innerHTML =
+                    `<div style="text-align:center;padding:3rem 1rem;color:var(--gray-400)">
         <div style="font-size:36px">🔍</div>
         <p style="font-size:14px;margin-top:8px">No se encontraron resultados.</p>
       </div>`;
-    return;
-  }
+                return;
+            }
 
-  document.getElementById("lista").innerHTML = items.map(f => `
+            document.getElementById("lista").innerHTML = items.map(f => `
     <div class="faq-card" id="faq-${f.id}">
       <div class="faq-header" onclick="toggle(${f.id})">
         <div class="faq-icon ${f.iconClass}">${f.icon}</div>
@@ -341,7 +683,7 @@ function filtrar() {
                       <p>${s.txt}</p>
                       ${s.note ? `<p class="step-note">${s.note}</p>` : ''}
                     </div>
-                    ${s.img ? `<img class="step-thumb" src="${s.img}" alt="Imagen paso ${i+1}" onclick="verImagen('${s.img}')">` : ''}
+                    ${s.img ? `<img class="step-thumb" src="${s.img}" alt="Imagen paso ${i + 1}" onclick="verImagen('${s.img}')">` : ''}
                   </div>
                   ${s.video ? renderVideo(s.video) : ''}
                 </div>
@@ -350,31 +692,32 @@ function filtrar() {
         </div>
       </div>
     </div>`).join("");
-}
+        }
 
-function renderVideo(src) {
-  const isEmbed = src.startsWith("http");
-  if (isEmbed) {
-    return `<div class="step-video"><iframe src="${src}" allowfullscreen loading="lazy"></iframe></div>`;
-  }
-  return `<div class="step-video"><video controls playsinline preload="none"><source src="${src}"></video></div>`;
-}
+        function renderVideo(src) {
+            const isEmbed = src.startsWith("http");
+            if (isEmbed) {
+                return `<div class="step-video"><iframe src="${src}" allowfullscreen loading="lazy"></iframe></div>`;
+            }
+            return `<div class="step-video"><video controls playsinline preload="none"><source src="${src}"></video></div>`;
+        }
 
-function toggle(id) {
-  document.getElementById("faq-" + id).classList.toggle("open");
-}
+        function toggle(id) {
+            document.getElementById("faq-" + id).classList.toggle("open");
+        }
 
-function verImagen(src) {
-  document.getElementById("imgGrande").src = src;
-  document.getElementById("modalImg").classList.add("active");
-}
+        function verImagen(src) {
+            document.getElementById("imgGrande").src = src;
+            document.getElementById("modalImg").classList.add("active");
+        }
 
-function cerrarImagen() {
-  document.getElementById("modalImg").classList.remove("active");
-}
+        function cerrarImagen() {
+            document.getElementById("modalImg").classList.remove("active");
+        }
 
-renderCats();
-filtrar();
-</script>
+        renderCats();
+        filtrar();
+    </script>
 </body>
+
 </html>
